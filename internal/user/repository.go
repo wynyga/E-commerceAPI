@@ -9,6 +9,7 @@ import (
 type Repository interface {
 	CreateUser(user User) (int, error)
 	GetUserByEmail(email string) (User, error)
+	GetUserByID(id int) (User, error)
 }
 
 type repository struct {
@@ -17,6 +18,26 @@ type repository struct {
 
 func NewRepository(db *sql.DB) Repository {
 	return &repository{db: db}
+}
+
+// GetUserByID mencari pengguna di database berdasarkan ID
+func (r *repository) GetUserByID(id int) (User, error) {
+	var user User
+	query := `SELECT id, email, created_at, updated_at FROM users WHERE id = ?`
+
+	err := r.db.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.Email,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return User{}, fmt.Errorf("user not found")
+		}
+		return User{}, fmt.Errorf("could not get user by id: %v", err)
+	}
+	return user, nil
 }
 
 // CreatreUser menyimpan user baru ke database

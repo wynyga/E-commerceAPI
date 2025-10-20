@@ -1,8 +1,10 @@
+// Cara Jalankan server: go run ./cmd/api
 package main
 
 import (
 	"log"
 
+	"github.com/wynyga/E-commerceAPI/internal/auth"
 	"github.com/wynyga/E-commerceAPI/internal/user" //Perhaitkan go.mod untuk path module yang benar
 
 	"github.com/gin-gonic/gin"
@@ -26,10 +28,19 @@ func main() {
 
 	// Setup Gin Router
 	router := gin.Default()
+
+	// Grup untuk endpoint publik (tidak perlu login)
 	api := router.Group("/api/v1")
 	{
 		api.POST("/register", userHandler.RegisterUser)
 		api.POST("/login", userHandler.LoginUser)
+	}
+
+	// Grup untuk endpoint terproteksi (wajib login/bawa token)
+	protected := router.Group("/api/v1")
+	protected.Use(auth.AuthMiddleware()) // Terapkan middleware di sini!
+	{
+		protected.GET("/profile", userHandler.GetProfile)
 	}
 
 	// Jalankan server

@@ -3,6 +3,7 @@ package user
 
 import (
 	"fmt"
+
 	"github.com/wynyga/E-commerceAPI/internal/auth"
 
 	"golang.org/x/crypto/bcrypt"
@@ -12,6 +13,7 @@ import (
 type Service interface {
 	RegisterUser(payload RegisterPayload) (User, error)
 	LoginUser(payload LoginPayLoad) (string, error)
+	GetUserProfile(userID int) (User, error)
 }
 
 type service struct {
@@ -71,4 +73,13 @@ func (s *service) LoginUser(payload LoginPayLoad) (string, error) {
 	}
 
 	return token, nil
+}
+
+// GetUserProfile mengambil data profil pengguna berdasarkan ID
+func (s *service) GetUserProfile(userID int) (User, error) {
+	user, err := s.repo.GetUserByID(userID)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
 }

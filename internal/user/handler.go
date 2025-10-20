@@ -17,6 +17,25 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service: service}
 }
 
+// GetProfile menangani request untuk mendapatkan profil pengguna yang sedang login
+func (h *Handler) GetProfile(c *gin.Context) {
+	// Ambil userID dari context yang sudah di-set oleh middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	// Panggil service untuk mendapatkan profil
+	user, err := h.service.GetUserProfile(userID.(int))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
 // RegisterUser menangani request registrasi pengguna
 func (h *Handler) RegisterUser(c *gin.Context) {
 	var payload RegisterPayload

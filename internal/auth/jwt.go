@@ -27,7 +27,7 @@ func GenerateToken(userID int) (string, error) {
 	//Tandatangani token dengan secret key
 	signedToken, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return "", fmt.Errorf("Tidak bisa sign token: %v", err)
+		return "", fmt.Errorf("tidak bisa sign token: %v", err)
 	}
 	return signedToken, nil
 }
