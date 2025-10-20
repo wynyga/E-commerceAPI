@@ -1,8 +1,9 @@
 package main
 
 import (
-	"e-commerce/internal/user"
 	"log"
+
+	"github.com/wynyga/E-commerceAPI/internal/user" //Perhaitkan go.mod untuk path module yang benar
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -25,12 +26,10 @@ func main() {
 
 	// Setup Gin Router
 	router := gin.Default()
-
-	// Grup routing untuk API
 	api := router.Group("/api/v1")
 	{
-		// Endpoint registrasi
 		api.POST("/register", userHandler.RegisterUser)
+		api.POST("/login", userHandler.LoginUser)
 	}
 
 	// Jalankan server

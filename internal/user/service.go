@@ -1,8 +1,9 @@
-// Lapisan ini menangani logika bisnis, seperti hashing password sebelum disimpan.
+// Komponen ini menangani logika bisnis, seperti hashing password sebelum disimpan.
 package user
 
 import (
 	"fmt"
+	"github.com/wynyga/E-commerceAPI/internal/auth"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -10,6 +11,7 @@ import (
 // Service mendefinisikan interface untuk logika bisnis user
 type Service interface {
 	RegisterUser(payload RegisterPayload) (User, error)
+	LoginUser(payload LoginPayLoad) (string, error)
 }
 
 type service struct {
@@ -45,4 +47,28 @@ func (s *service) RegisterUser(payload RegisterPayload) (User, error) {
 	newUser.Password = "" // Kosongkan password sebelum dikirim kembali
 
 	return newUser, nil
+}
+
+// LoginUser memverifikasi kredensial pengguna dan mengembalikan JWT
+func (s *service) LoginUser(payload LoginPayLoad) (string, error) {
+	// 1. Cari user berdasarkan email
+	user, err := s.repo.GetUserByEmail(payload.Email)
+	if err != nil {
+		return "", fmt.Errorf("invalid credentials") // Pesan error generik
+	}
+
+	// 2. Bandingkan password yang di-hash dengan password dari payload
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
+	if err != nil {
+		// Jika error, berarti password tidak cocok
+		return "", fmt.Errorf("invalid credentials")
+	}
+
+	// 3. Jika cocok, buat token JWT
+	token, err := auth.GenerateToken(user.ID)
+	if err != nil {
+		return "", fmt.Errorf("could not generate token: %v", err)
+	}
+
+	return token, nil
 }

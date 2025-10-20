@@ -1,4 +1,4 @@
-// Lapisan ini bertanggung jawab untuk semua interaksi dengan database (query SQL)
+// Komponen ini bertanggung jawab untuk semua interaksi dengan database (query SQL)
 package user
 
 import (
@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	CreateUser(user User) (int, error)
+	GetUserByEmail(email string) (User, error)
 }
 
 type repository struct {
@@ -30,4 +31,26 @@ func (r *repository) CreateUser(user User) (int, error) {
 		return 0, fmt.Errorf("failed to retrieve last insert id: %v", err)
 	}
 	return int(id), nil
+}
+
+// GetUserByEmail mencari pengguna di database berdasarkan email
+func (r *repository) GetUserByEmail(email string) (User, error) {
+	var user User
+	query := "SELECT id, email, password, created_at, updated_at FROM users WHERE email = ?"
+
+	err := r.db.QueryRow(query, email).Scan(
+		&user.ID,
+		&user.Email,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return User{}, fmt.Errorf("user not found")
+		}
+		return User{}, fmt.Errorf("failed to get user by email: %v", err)
+	}
+	return user, nil
 }

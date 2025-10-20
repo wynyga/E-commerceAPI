@@ -1,3 +1,4 @@
+// Komponen model user dan payload untuk registrasi dan login. Mulai dari model,repostitory, service, hingga handler.
 package user
 
 import "time"
@@ -15,4 +16,9 @@ type User struct {
 type RegisterPayload struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
+}
+
+type LoginPayLoad struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
