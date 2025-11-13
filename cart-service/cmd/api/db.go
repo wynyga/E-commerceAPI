@@ -1,26 +1,23 @@
 package main
 
 import (
-	"database/sql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 	"os"
-
-	_ "github.com/go-sql-driver/mysql" // Driver
 )
 
-func initDB() *sql.DB {
-	dbURL := os.Getenv("DB_DSN")
-	if dbURL == "" {
-		log.Fatal("DB_DSN environment variable is not set")
+func InitDB() *gorm.DB {
+	dsn := os.Getenv("DB_SOURCE")
+	if dsn == "" {
+		log.Fatal("DB_SOURCE not set in .env file")
 	}
 
-	db, err := sql.Open("mysql", dbURL[8:])
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		log.Fatal("Database ping failed:", err)
-	}
+	log.Println("Database connection established")
 	return db
 }
