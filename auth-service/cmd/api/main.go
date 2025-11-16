@@ -4,8 +4,8 @@ package main
 import (
 	"log"
 
-	"github.com/wynyga/E-commerceAPI/internal/auth"
-	"github.com/wynyga/E-commerceAPI/internal/user" //Perhaitkan go.mod untuk path module yang benar
+	"auth-service/internal/auth"
+	"auth-service/internal/user" //Perhaitkan go.mod untuk path module yang benar
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -14,12 +14,11 @@ import (
 func main() {
 	// Muat .env
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("No .env file found, relying on environment variables from docker-compose")
 	}
 
 	// Inisialisasi Database
 	db := initDB()
-	defer db.Close()
 
 	// Inisialisasi Lapis demi Lapis (Dependency Injection)
 	userRepo := user.NewRepository(db)

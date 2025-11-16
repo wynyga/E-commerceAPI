@@ -4,7 +4,7 @@ package user
 import (
 	"fmt"
 
-	"github.com/wynyga/E-commerceAPI/internal/auth"
+	"auth-service/internal/auth"
 
 	"golang.org/x/crypto/bcrypt"
 )

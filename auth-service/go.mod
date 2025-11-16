@@ -1,4 +1,4 @@
-module github.com/wynyga/E-commerceAPI
+module auth-service
 
 go 1.24.0
 
