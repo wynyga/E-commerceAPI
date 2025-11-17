@@ -10,7 +10,6 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql-data:/var/lib/mysql
-    # Healthcheck untuk menunggu MySQL siap
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
       interval: 10s
@@ -23,12 +22,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # --- UPDATE KUNCI ---
-      # Diberi "mysql://" karena kodenya (dbURL[8:]) MEMBUTUHKANNYA
       DB_SOURCE: "mysql://root:@tcp(db:3306)/auth-service?parseTime=true"
       JWT_SECRET_KEY: "pats_kats_kits_kuts_mahou_11231231313"
     depends_on:
-      # Menunggu healthcheck 'db' lolos
       db:
         condition: service_healthy
 
@@ -38,13 +34,10 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # --- UPDATE KUNCI ---
-      # Diberi DSN "bersih" (tanpa "mysql://") karena GORM MEMBUTUHKANNYA
       DB_SOURCE: "root:@tcp(db:3306)/cart-service?parseTime=true"
       API_PORT: "8081"
       JWT_SECRET: "pats_kats_kits_kuts_mahou_11231231313"
     depends_on:
-      # Menunggu healthcheck 'db' lolos
       db:
         condition: service_healthy
 
