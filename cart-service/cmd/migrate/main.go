@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	// --- IMPORT KUNCI ---
 	// 1. Driver database/sql standar untuk MySQL
@@ -30,6 +31,10 @@ func main() {
 	dbURL := os.Getenv("DB_SOURCE")
 	if dbURL == "" {
 		log.Fatal("DB_SOURCE environment variable is required")
+	}
+
+	if !strings.HasPrefix(dbURL, "mysql://") {
+		dbURL = "mysql://" + dbURL
 	}
 
 	// Tentukan path ke folder migrasi
