@@ -32,10 +32,23 @@ services:
     build: ./cart-service
     restart: always
     ports:
-      - "8081:8081"
+      - "8081:8080"
     environment:
       DB_SOURCE: "root:@tcp(db:3306)/cart-service?parseTime=true"
-      API_PORT: "8081"
+      API_PORT: "8080"
+      JWT_SECRET: "pats_kats_kits_kuts_mahou_11231231313"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  product-service:
+    build: ./product-service
+    restart: always
+    ports:
+      - "8082:8080"
+    environment:
+      DB_SOURCE: "root:@tcp(db:3306)/product-service?parseTime=true"
+      API_PORT: "8080"
       JWT_SECRET: "pats_kats_kits_kuts_mahou_11231231313"
     depends_on:
       db:

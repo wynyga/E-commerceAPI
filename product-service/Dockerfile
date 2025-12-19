@@ -1,18 +1,19 @@
-# Filepath: auth-service/Dockerfile
+# Filepath: product-service/Dockerfile
 # (PASTIKAN Anda copy-paste SEMUA ini ke file)
 
 # --- STAGE 1: Build Binary ---
+# (Pastikan go.mod product-service Anda juga go 1.24)
 FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Salin file go.mod dan go.sum
+# Salin file go.mod dan go.sum dari product-service
 COPY go.mod go.sum ./
 
-# Download semua dependensi
+# Download semua dependensi (GORM, Chi, dll)
 RUN go mod download
 
-# Salin sisa kode dari auth-service
+# Salin sisa kode dari product-service
 COPY . .
 
 # Build binary
@@ -26,8 +27,8 @@ WORKDIR /app
 COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/server .
 
-# Port untuk auth-service
-EXPOSE 8080
+# Port untuk product-service
+EXPOSE 8082
 
 # Perintah untuk menjalankan server
 CMD ["./server"]

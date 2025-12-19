@@ -24,6 +24,7 @@ FROM alpine:latest
 WORKDIR /app
 
 # Salin *hanya* binary yang sudah di-build
+COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/server .
 
 # Port untuk cart-service

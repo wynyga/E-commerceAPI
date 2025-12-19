@@ -10,7 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
-	// Library GORM (Gunakan alias gormMysql agar tidak bentrok dengan driver migrate)
+	// Library GORM
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -18,57 +18,56 @@ import (
 func InitDB() *gorm.DB {
 	dsn := os.Getenv("DB_SOURCE")
 	if dsn == "" {
-		log.Println("DB_SOURCE not set in .env file, relying on docker-compose")
+		log.Fatal("DB_SOURCE not set in environment")
 	}
 
-	// 1. Bersihkan DSN untuk GORM
+	// Menghapus prefix jika ada (agar kompatibel dengan kode Anda)
 	gormDSN := strings.TrimPrefix(dsn, "mysql://")
 
-	// 2. Buka koneksi GORM
 	db, err := gorm.Open(gormMysql.Open(gormDSN), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatal("Failed to connect to database:", err)
 	}
+	log.Println("Database connection established via GORM")
 
-	log.Println("Database connection established")
-
-	// 3. Jalankan migrasi otomatis sebelum mengembalikan instance db
+	// Panggil fungsi migrasi
 	runMigrations(db)
 
 	return db
 }
 
 func runMigrations(db *gorm.DB) {
-	// Ambil sql.DB standar dari GORM
+	// 1. GORM menggunakan *gorm.DB, tapi migrate butuh *sql.DB (standar Go)
 	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatalf("Could not get sql.DB from gorm.DB: %v", err)
+		log.Fatal("Could not get sql.DB from gorm.DB:", err)
 	}
 
-	// Buat driver migrasi
+	// 2. Buat driver migrasi untuk MySQL
 	driver, err := mysql.WithInstance(sqlDB, &mysql.Config{})
 	if err != nil {
-		log.Fatalf("Could not create migration driver: %v", err)
+		log.Fatal("Could not create migration driver:", err)
 	}
 
-	// Inisialisasi instance migrasi (mencari folder migrations)
+	// 3. Inisialisasi instance migrasi
+	// Pastikan folder 'migrations' ada di root project container
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://migrations",
 		"mysql",
 		driver,
 	)
 	if err != nil {
-		log.Fatalf("Could not initialize migration instance: %v", err)
+		log.Fatal("Could not initialize migration instance:", err)
 	}
 
-	// Jalankan perintah UP
+	// 4. Jalankan migrasi UP
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("Failed to run migrations: %v", err)
+		log.Fatal("Failed to run migrations:", err)
 	}
 
 	if err == migrate.ErrNoChange {
-		log.Println("Cart-service database schema is already up to date")
+		log.Println("Database schema is up to date (no changes)")
 	} else {
-		log.Println("Cart-service database migrated successfully!")
+		log.Println("Database migrated successfully!")
 	}
 }
