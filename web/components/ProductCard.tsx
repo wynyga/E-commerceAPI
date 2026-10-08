@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-line bg-surface">
       <Link href={`/products/${product.id}`} className="block" tabIndex={-1} aria-hidden="true">
-        <ProductTile id={product.id} name={product.name} />
+        <ProductTile product={product} />
       </Link>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h2 className="font-display text-lg leading-snug">

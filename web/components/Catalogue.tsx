@@ -68,8 +68,10 @@ export default function Catalogue() {
             {meta ? `${meta.total} product${meta.total === 1 ? "" : "s"}${filtered ? ` matching “${params.get("q")}”` : ""}` : "Loading…"}
           </p>
         </div>
-        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          <SearchInput value={text} onChange={setText} placeholder="Search products" />
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          <div className="sm:w-64">
+            <SearchInput value={text} onChange={setText} placeholder="Search products" />
+          </div>
           <Select label="Sort products" value={sort} onChange={(v) => update({ sort: v as ProductSort })} options={SORTS} className="w-auto" />
         </div>
       </div>

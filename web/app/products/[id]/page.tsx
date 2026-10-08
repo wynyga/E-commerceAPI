@@ -12,6 +12,7 @@ import StockBadge from "@/components/StockBadge";
 import { Button, Card, EmptyState, ErrorState } from "@/components/ui";
 import { api, ApiError } from "@/lib/api";
 import { rupiah } from "@/lib/format";
+import { PHOTO_CREDITS } from "@/lib/photo-credits";
 import { useAddToCart } from "@/lib/shop-hooks";
 
 export default function ProductPage() {
@@ -55,6 +56,7 @@ export default function ProductPage() {
     );
   }
 
+  const credit = p.image ? PHOTO_CREDITS[Number(p.image.match(/(\d+)\.jpg$/)?.[1])] : undefined;
   const max = Math.min(p.stock, 99);
   const amount = Math.min(qty, Math.max(1, max));
 
@@ -64,7 +66,21 @@ export default function ProductPage() {
         ← All products
       </Link>
       <div className="grid gap-8 md:grid-cols-2">
-        <ProductTile id={p.id} name={p.name} large className="rounded-2xl border border-line" />
+        <div>
+          <ProductTile product={p} large className="rounded-2xl border border-line" />
+          {credit && (
+            <p className="mt-2 text-xs text-muted">
+              Photo: {credit.author},{" "}
+              <a className="underline hover:text-ink" href={credit.licenseUrl || credit.source} target="_blank" rel="noreferrer">
+                {credit.license}
+              </a>
+              {" · "}
+              <a className="underline hover:text-ink" href={credit.source} target="_blank" rel="noreferrer">
+                Wikimedia Commons
+              </a>
+            </p>
+          )}
+        </div>
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="font-display text-3xl leading-tight sm:text-4xl">{p.name}</h1>

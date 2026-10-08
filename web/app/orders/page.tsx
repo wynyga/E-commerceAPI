@@ -44,7 +44,6 @@ function Orders() {
           <>
             <ul className="divide-y divide-line">
               {q.data.items.map((o) => {
-                const units = o.items.reduce((n, i) => n + i.quantity, 0);
                 return (
                   <li key={o.id}>
                     <Link href={`/orders/${o.id}`} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4 hover:bg-surface2">
@@ -54,7 +53,6 @@ function Orders() {
                       </div>
                       <p className="min-w-0 flex-1 truncate text-sm text-muted">
                         {o.items.map((i) => i.name).join(", ")}
-                        <span className="sr-only"> ({units} items)</span>
                       </p>
                       <OrderStatusBadge status={o.status} />
                       <p className="w-32 text-right font-semibold tabular-nums">{rupiah(o.total)}</p>

@@ -46,6 +46,14 @@ Two accounts exist from the start (one click fills the sign-in form in demo mode
 "Another shopper buys it first", which drains the stock of the last product in your cart so you can
 see a checkout fail cleanly.
 
+## Product photos
+
+The demo catalogue uses photos from Wikimedia Commons (CC BY, CC BY-SA, CC0 or public domain), resized and kept in
+`public/products/`. Each product page credits its photographer and licence, and
+[`public/products/CREDITS.md`](public/products/CREDITS.md) lists them all. The Go product service has no image field,
+so `image` exists only in the demo catalogue; products from the real services, and any an admin adds in the demo,
+get generated artwork (a gradient with the product's initial) instead.
+
 ## Tests
 
 ```bash
@@ -63,7 +71,9 @@ services, and prints every difference in status, error message, field errors or 
 ADMIN_PASSWORD=<the stack's ADMIN_PASSWORD> node scripts/conformance.ts
 ```
 
-At the time of writing the two agree on all 56 steps.
+At the time of writing the two agree on all 56 steps. The in-browser flows (search, cart, the stock rollback,
+double-click checkout, cancel, admin CRUD, mobile layout) were also driven through a real browser against both
+modes; that script is not part of the repo because it needs Playwright.
 
 ## Deploying the demo
 

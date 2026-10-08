@@ -83,7 +83,7 @@ function OrderDetail() {
       />
 
       <Card>
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-line text-xs text-muted">
               <tr>

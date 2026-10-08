@@ -11,6 +11,8 @@ export type Product = {
   /** Whole rupiah. */
   price: number;
   stock: number;
+  /** Demo catalogue only: a photo under /public. The Go product service has no image field yet. */
+  image?: string;
   created_at: string;
   updated_at: string;
 };

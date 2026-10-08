@@ -188,7 +188,8 @@ async function scenario(c: Client, tag: string, adminEmail: string, adminPasswor
 
 // ---- comparison ----------------------------------------------------------------------------------
 
-const IGNORED = new Set(["created_at", "updated_at"]);
+// `image` exists only in the demo catalogue; the Go product service has no such field.
+const IGNORED = new Set(["created_at", "updated_at", "image"]);
 
 /** A comparable description of a JSON value: keys and types, not data, with timestamps left out. */
 function shape(v: unknown, depth = 0): unknown {

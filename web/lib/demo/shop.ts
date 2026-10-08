@@ -78,10 +78,10 @@ function weakHash(s: string): string {
 const SEED: Array<[string, string, number, number]> = [
   ["Ceramic Pour-over Dripper", "Hand-glazed cone dripper that fits a standard 02 paper filter. Dishwasher safe.", 185000, 24],
   ["Toraja Single-origin Beans 250g", "Medium roast, notes of cacao and dark fruit. Roasted weekly, whole bean.", 98000, 60],
-  ["Stoneware Mug 350 ml", "Thick-walled mug that keeps a flat white warm. Speckled matte glaze.", 75000, 40],
+  ["Stoneware Mug 350 ml", "Thick-walled white mug that keeps a flat white warm. Smooth glaze, comfortable handle.", 75000, 40],
   ["Gooseneck Kettle 800 ml", "Stainless steel kettle with a fine spout for slow, even pouring.", 420000, 12],
   ["Linen Tote Bag", "Heavy washed linen with an inside pocket. Holds two laptops and a lunch.", 135000, 30],
-  ["Dotted Notebook A5", "160 pages of 100 gsm paper that takes fountain pen ink without bleeding.", 68000, 80],
+  ["Kraft Notebook A5", "Soft kraft cover with 160 pages of 100 gsm paper that takes fountain pen ink without bleeding.", 68000, 80],
   ["Brass Mechanical Pencil 0.5", "Weighted brass body with a retractable tip. Ships with spare leads.", 155000, 18],
   ["Walnut Desk Shelf", "Raised shelf that frees up desk space for a monitor and a plant.", 520000, 7],
   ["LED Desk Lamp", "Dimmable, warm-to-cool light, USB-C powered, folds flat for travel.", 340000, 15],
@@ -102,6 +102,7 @@ export function seedState(now = new Date()): ShopState {
     description,
     price,
     stock,
+    image: `/products/${i + 1}.jpg`,
     created_at: at(SEED.length - i + 48),
     updated_at: at(SEED.length - i + 48),
   }));

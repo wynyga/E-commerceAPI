@@ -52,9 +52,6 @@ export async function demoRequest(
   body?: unknown,
   headers?: Record<string, string>,
 ): Promise<{ status: number; json: unknown }> {
-  // A short pause so loading states are visible, like a real network.
-  await new Promise((r) => setTimeout(r, 90 + Math.random() * 110));
-
   const url = new URL(path, "http://demo.local");
   const query: Record<string, string> = {};
   url.searchParams.forEach((v, k) => (query[k] = v));
@@ -71,6 +68,10 @@ export async function demoRequest(
 
   if (method.toUpperCase() !== "GET") write(STATE_KEY, JSON.stringify(shop.state));
   if (res.session !== undefined) write(SESSION_KEY, res.session === null ? null : String(res.session));
+
+  // The change is applied before the pause, as if the request had already reached the server:
+  // leaving the page mid-request can't lose it. The pause only keeps loading states visible.
+  await new Promise((r) => setTimeout(r, 90 + Math.random() * 110));
   return { status: res.status, json: res.json };
 }
 

@@ -137,7 +137,9 @@ function Cart() {
             const short = product && item.quantity > product.stock;
             return (
               <div key={item.id} className="flex gap-4 p-4">
-                {product ? <ProductTile id={product.id} name={product.name} className="w-20 shrink-0 rounded-lg" /> : <div className="w-20 shrink-0 rounded-lg bg-surface2" />}
+                <div className="w-20 shrink-0 self-start overflow-hidden rounded-lg bg-surface2">
+                  {product ? <ProductTile product={product} /> : <div className="aspect-[4/3]" />}
+                </div>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
                     <div className="min-w-0">
