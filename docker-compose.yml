@@ -1,58 +1,88 @@
-# Filepath: docker-compose.yml
+name: shop
+
+# Copy .env.example to .env and fill it in first. No secret lives in this file.
+# Host ports default to 8091-8094 (8080 is often reserved on Windows); the database is not published.
+
+x-service: &service
+  restart: unless-stopped
+  healthcheck:
+    test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health >/dev/null || exit 1"]
+    interval: 3s
+    timeout: 3s
+    retries: 20
+
+x-secrets: &secrets
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (32+ characters)}
+  INTERNAL_KEY: ${INTERNAL_KEY:?set INTERNAL_KEY in .env (32+ characters)}
+
 services:
   db:
     image: mysql:8.0
-    restart: always
+    restart: unless-stopped
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    ports:
-      - "3306:3306"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql-data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
-      interval: 10s
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 30
 
-  auth-service:
-    build: ./auth-service
-    restart: always
-    ports:
-      - "8080:8080"
-    environment:
-      DB_SOURCE: "mysql://root:@tcp(db:3306)/auth-service?parseTime=true"
-      JWT_SECRET_KEY: "pats_kats_kits_kuts_mahou_11231231313"
+  auth:
+    <<: *service
+    build: { context: ., dockerfile: docker/Dockerfile, args: { SERVICE: auth } }
     depends_on:
-      db:
-        condition: service_healthy
+      db: { condition: service_healthy }
+    environment:
+      <<: *secrets
+      DB_SOURCE: shop:${APP_DB_PASSWORD}@tcp(db:3306)/shop_auth
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@shop.test}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      AUTH_RATE_PER_MINUTE: ${AUTH_RATE_PER_MINUTE:-10}
+    ports:
+      - "${AUTH_PORT:-8091}:8080"
 
-  cart-service:
-    build: ./cart-service
-    restart: always
-    ports:
-      - "8081:8080"
-    environment:
-      DB_SOURCE: "root:@tcp(db:3306)/cart-service?parseTime=true"
-      API_PORT: "8080"
-      JWT_SECRET: "pats_kats_kits_kuts_mahou_11231231313"
+  product:
+    <<: *service
+    build: { context: ., dockerfile: docker/Dockerfile, args: { SERVICE: product } }
     depends_on:
-      db:
-        condition: service_healthy
+      db: { condition: service_healthy }
+    environment:
+      <<: *secrets
+      DB_SOURCE: shop:${APP_DB_PASSWORD}@tcp(db:3306)/shop_product
+    ports:
+      - "${PRODUCT_PORT:-8093}:8080"
 
-  product-service:
-    build: ./product-service
-    restart: always
-    ports:
-      - "8082:8080"
-    environment:
-      DB_SOURCE: "root:@tcp(db:3306)/product-service?parseTime=true"
-      API_PORT: "8080"
-      JWT_SECRET: "pats_kats_kits_kuts_mahou_11231231313"
+  cart:
+    <<: *service
+    build: { context: ., dockerfile: docker/Dockerfile, args: { SERVICE: cart } }
     depends_on:
-      db:
-        condition: service_healthy
+      db: { condition: service_healthy }
+      product: { condition: service_healthy }
+    environment:
+      <<: *secrets
+      DB_SOURCE: shop:${APP_DB_PASSWORD}@tcp(db:3306)/shop_cart
+      PRODUCT_URL: http://product:8080
+    ports:
+      - "${CART_PORT:-8092}:8080"
+
+  order:
+    <<: *service
+    build: { context: ., dockerfile: docker/Dockerfile, args: { SERVICE: order } }
+    depends_on:
+      db: { condition: service_healthy }
+      product: { condition: service_healthy }
+      cart: { condition: service_healthy }
+    environment:
+      <<: *secrets
+      DB_SOURCE: shop:${APP_DB_PASSWORD}@tcp(db:3306)/shop_order
+      PRODUCT_URL: http://product:8080
+      CART_URL: http://cart:8080
+    ports:
+      - "${ORDER_PORT:-8094}:8080"
 
 volumes:
-  mysql-data:
+  dbdata:
