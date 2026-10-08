@@ -14,8 +14,16 @@ type StoredUser = User & { passwordHash: string };
 
 type StoredOrder = Order & { key?: string };
 
+/**
+ * Bump this whenever the sample catalogue (names, photos, ids) changes. A visitor's saved shop
+ * from an older version is discarded, so a product can never show another product's photo.
+ */
+export const SEED_VERSION = 3;
+
 export type ShopState = {
   v: 1;
+  /** Which sample catalogue this shop started from. */
+  seed: number;
   next: { product: number; user: number; cartItem: number; order: number };
   products: Product[];
   users: StoredUser[];
@@ -112,12 +120,19 @@ export function seedState(now = new Date()): ShopState {
   ];
   return {
     v: 1,
+    seed: SEED_VERSION,
     next: { product: products.length + 1, user: users.length + 1, cartItem: 1, order: 1 },
     products,
     users,
     carts: {},
     orders: [],
   };
+}
+
+/** True if a saved shop was built from the current sample catalogue. */
+export function isCurrent(state: unknown): state is ShopState {
+  const s = state as Partial<ShopState> | null;
+  return !!s && s.v === 1 && s.seed === SEED_VERSION && Array.isArray(s.products);
 }
 
 // ---- Validation, written to match the Go validator's messages ----------------------------

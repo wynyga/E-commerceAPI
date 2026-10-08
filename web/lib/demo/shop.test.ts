@@ -5,7 +5,10 @@ import assert from "node:assert/strict";
 import { beforeEach, describe, test } from "node:test";
 
 import type { Cart, Order, Paged, Product, User } from "../types.ts";
-import { DEMO_ADMIN, DEMO_CUSTOMER, DemoShop, type Res } from "./shop.ts";
+import { existsSync } from "node:fs";
+
+import { PHOTO_CREDITS } from "../photo-credits.ts";
+import { DEMO_ADMIN, DEMO_CUSTOMER, DemoShop, isCurrent, seedState, SEED_VERSION, type Res } from "./shop.ts";
 
 let shop: DemoShop;
 let seq = 0;
@@ -385,5 +388,33 @@ describe("state", () => {
     add(u, 2, 1);
     const o = call("POST", "/orders", { as: u, key: "secret-ish" }).json as Order & { key?: string };
     assert.equal(o.key, undefined);
+  });
+});
+
+describe("sample catalogue", () => {
+  const photo = (image: string) => new URL(`../../public${image}`, import.meta.url);
+
+  test("every product has a photo that exists and is credited", () => {
+    for (const p of seedState().products) {
+      assert.ok(p.image, `${p.name} has no image`);
+      assert.ok(existsSync(photo(p.image)), `${p.image} is missing for ${p.name}`);
+      const id = Number(p.image.match(/(\d+)\.jpg$/)?.[1]);
+      assert.equal(id, p.id, `${p.name} points at the photo of product ${id}`);
+      assert.ok(PHOTO_CREDITS[id], `no credit for ${p.image}`);
+    }
+  });
+
+  test("product names are unique", () => {
+    const names = seedState().products.map((p) => p.name);
+    assert.equal(new Set(names).size, names.length);
+  });
+
+  test("a saved shop from another catalogue version is not reused", () => {
+    assert.ok(isCurrent(JSON.parse(JSON.stringify(seedState()))));
+    assert.equal(isCurrent({ ...seedState(), seed: SEED_VERSION - 1 }), false);
+    const { seed: _seed, ...legacy } = seedState();
+    void _seed;
+    assert.equal(isCurrent(legacy), false);
+    assert.equal(isCurrent(null), false);
   });
 });

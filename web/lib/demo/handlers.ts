@@ -1,7 +1,7 @@
 // Browser side of the demo: keeps the DemoShop in localStorage so every visitor has a private,
 // resettable shop, and answers the API client's requests from it.
 
-import { DemoShop, type ShopState } from "./shop";
+import { DemoShop, isCurrent } from "./shop";
 
 const STATE_KEY = "shop-demo:state:v1";
 const SESSION_KEY = "shop-demo:session:v1";
@@ -32,11 +32,15 @@ function load(): DemoShop {
   const raw = read(STATE_KEY);
   if (raw) {
     try {
-      const state = JSON.parse(raw) as ShopState;
-      if (state?.v === 1 && Array.isArray(state.products)) return new DemoShop(state);
+      const state: unknown = JSON.parse(raw);
+      if (isCurrent(state)) return new DemoShop(state);
     } catch {
-      // fall through to a fresh shop
+      // unreadable: start over below
     }
+    // Saved by an older version of the sample catalogue (or damaged): start from the current one,
+    // and sign out, since accounts made in the old shop no longer exist.
+    write(STATE_KEY, null);
+    write(SESSION_KEY, null);
   }
   return new DemoShop();
 }
