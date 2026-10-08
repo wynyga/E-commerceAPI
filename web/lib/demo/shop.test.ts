@@ -46,7 +46,7 @@ function add(as: number, productId: number, quantity: number): Res {
   return call("POST", "/cart/items", { as, body: { product_id: productId, quantity } });
 }
 
-// Seed ids used below: 1 dripper (24), 2 beans (60), 13 candle (3), 14 print (2), 15 enamel mug (0 in stock).
+// Seed ids used below: 1 dripper (24), 2 beans (60), 13 espresso machine (3), 14 limited lot (2), 15 enamel mug (0 in stock).
 
 describe("accounts", () => {
   test("login returns the user and starts a session; the password never leaves", () => {
@@ -117,9 +117,9 @@ describe("catalogue", () => {
   });
 
   test("searches name and description", () => {
-    const res = call("GET", "/products", { query: { q: "linen" } }).json as Paged<Product>;
+    const res = call("GET", "/products", { query: { q: "grinder" } }).json as Paged<Product>;
     assert.ok(res.total >= 1);
-    assert.ok(res.items.every((p) => /linen/i.test(p.name + p.description)));
+    assert.ok(res.items.every((p) => /grinder/i.test(p.name + p.description)));
   });
 
   test("sorts by price both ways", () => {
@@ -184,7 +184,7 @@ describe("cart", () => {
   test("refuses more than is in stock, naming the product and the stock", () => {
     const res = add(BUYER(), 14, 3);
     assert.equal(res.status, 409);
-    assert.match(errorOf(res), /only 2 of "Limited Print: Merapi Dawn" in stock/);
+    assert.match(errorOf(res), /only 2 of "Limited Lot: Gayo Honey 200g" in stock/);
   });
 
   test("the stock check counts what the cart already holds", () => {
@@ -272,7 +272,7 @@ describe("checkout", () => {
     const before = [stock(1), stock(14)];
     const res = call("POST", "/orders", { as: u });
     assert.equal(res.status, 409);
-    assert.match(errorOf(res), /only 0 of "Limited Print: Merapi Dawn" left in stock/);
+    assert.match(errorOf(res), /only 0 of "Limited Lot: Gayo Honey 200g" left in stock/);
     // product 1 was reserved first, then released again
     assert.deepEqual([stock(1), stock(14)], before);
     assert.equal((call("GET", "/orders", { as: u }).json as Paged<Order>).total, 0);

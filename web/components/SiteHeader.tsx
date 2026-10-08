@@ -33,7 +33,7 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
         <Link href="/" className="font-display text-xl tracking-tight">
-          Kedai Kecil
+          Kedai Seduh
         </Link>
         <nav aria-label="Main" className="flex items-center gap-1">
           <NavLink href="/">Shop</NavLink>

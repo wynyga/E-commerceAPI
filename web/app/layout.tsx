@@ -13,8 +13,8 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swa
 const display = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Kedai Kecil", template: "%s · Kedai Kecil" },
-  description: "A small online shop built on four Go microservices: accounts, catalogue, cart and orders.",
+  title: { default: "Kedai Seduh", template: "%s · Kedai Seduh" },
+  description: "A small coffee gear shop built on four Go microservices: accounts, catalogue, cart and orders.",
 };
 
 export const viewport: Viewport = {

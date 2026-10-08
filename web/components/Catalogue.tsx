@@ -63,13 +63,13 @@ export default function Catalogue() {
     <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div>
-          <h1 className="font-display text-3xl leading-tight sm:text-4xl">The shop</h1>
+          <h1 className="font-display text-3xl leading-tight sm:text-4xl">Coffee gear &amp; beans</h1>
           <p className="mt-1 text-sm text-muted" aria-live="polite">
             {meta ? `${meta.total} product${meta.total === 1 ? "" : "s"}${filtered ? ` matching “${params.get("q")}”` : ""}` : "Loading…"}
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          <div className="sm:w-64">
+          <div className="sm:w-64 sm:shrink-0">
             <SearchInput value={text} onChange={setText} placeholder="Search products" />
           </div>
           <Select label="Sort products" value={sort} onChange={(v) => update({ sort: v as ProductSort })} options={SORTS} className="w-auto" />

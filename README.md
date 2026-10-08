@@ -17,7 +17,7 @@ client ─┬─► auth      register · login · JWT (roles: customer, admin)
 
 ## Storefront
 
-[`web/`](web) is a Next.js shop on top of these services: catalogue with search and sorting, cart,
+[`web/`](web) is a Next.js shop for coffee gear and beans ("Kedai Seduh") on top of these services: catalogue with search and sorting, cart,
 checkout, orders and cancel, and an admin page for products. Its **demo mode** runs the whole shop in the
 visitor's browser (same rules as the services, checked by a conformance script), so it deploys to Vercel
 with no backend. With the four `SHOP_*_URL` variables set it talks to the real services instead, keeping the

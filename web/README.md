@@ -1,6 +1,7 @@
-# Kedai Kecil — storefront
+# Kedai Seduh — storefront
 
-A Next.js storefront for the four Go services in this repo: browse and search the catalogue, keep a
+A Next.js storefront for the four Go services in this repo, themed as a shop for coffee gear and beans
+(brewers, grinders, filters, kettles, beans): browse and search the catalogue, keep a
 cart, check out, review and cancel orders, and (as an admin) manage products.
 
 It runs in two modes, chosen by environment variables:
