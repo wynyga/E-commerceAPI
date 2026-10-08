@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f4efe7;
+  --ink: #1c1917;
+  --muted: #6b635a;
+  --line: #e6dfd3;
+  --accent: #b4532a;
+  --accent-ink: #ffffff;
+  --accent-soft: #f8e8df;
+  --danger: #b3261e;
+  --danger-soft: #fbe9e7;
+  --warn: #8a5a00;
+  --warn-soft: #fdf1d8;
+  --ok: #2e6b3a;
+  --ok-soft: #e5f1e7;
+  /* product tiles */
+  --tile-1: 82%;
+  --tile-2: 72%;
+  --tile-ink: 26%;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #14110f;
+  --surface: #1d1916;
+  --surface-2: #25201c;
+  --ink: #f1ebe3;
+  --muted: #a69c90;
+  --line: #332d27;
+  --accent: #e08a5f;
+  --accent-ink: #1a0f09;
+  --accent-soft: #3a2418;
+  --danger: #f08a82;
+  --danger-soft: #3a1c1a;
+  --warn: #f2b765;
+  --warn-soft: #37290f;
+  --ok: #7fcf8d;
+  --ok-soft: #1b2e1f;
+  --tile-1: 24%;
+  --tile-2: 17%;
+  --tile-ink: 78%;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+dialog::backdrop {
+  background: rgb(8 10 14 / 0.6);
+}
+
+/* Generated product artwork: a soft two-tone gradient per product, with its initial. */
+.tile {
+  --h: 24;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(circle at 78% 22%, hsl(calc(var(--h) + 40) 40% calc(var(--tile-1) + 6%) / 0.7) 0 18%, transparent 19%),
+    linear-gradient(140deg, hsl(var(--h) 38% var(--tile-1)), hsl(calc(var(--h) + 28) 34% var(--tile-2)));
+  color: hsl(var(--h) 32% var(--tile-ink));
+}
+
+.tile > span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.tile-lg > span {
+  font-size: 7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

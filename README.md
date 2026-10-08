@@ -15,6 +15,14 @@ client ─┬─► auth      register · login · JWT (roles: customer, admin)
                        └─ reserves / releases stock     (product service, internal key)
 ```
 
+## Storefront
+
+[`web/`](web) is a Next.js shop on top of these services: catalogue with search and sorting, cart,
+checkout, orders and cancel, and an admin page for products. Its **demo mode** runs the whole shop in the
+visitor's browser (same rules as the services, checked by a conformance script), so it deploys to Vercel
+with no backend. With the four `SHOP_*_URL` variables set it talks to the real services instead, keeping the
+JWT in an `httpOnly` cookie. See [`web/README.md`](web/README.md).
+
 ## How checkout stays consistent
 
 1. **Stock is taken with one conditional `UPDATE`** (`... WHERE stock >= ?`), so two buyers can never
@@ -100,5 +108,5 @@ ADMIN_PASSWORD=<your ADMIN_PASSWORD> go run ./tools/e2e     # needs the stack ru
 
 ## What it is not
 
-There is no payment step or order fulfilment (an order is `pending` or `cancelled`), no API gateway (each
-service is called directly), and tokens last 24 hours with no refresh. Prices are IDR only.
+There is no payment step or order fulfilment (an order is `pending` or `cancelled`), no API gateway (the
+services are called directly; the storefront's `/api` routes only forward requests and hold the cookie), and tokens last 24 hours with no refresh. Prices are IDR only.
